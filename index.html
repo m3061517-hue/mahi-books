@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAHI BOOKS</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f1eb;color:#29231f}
+header{background:#542b3b;color:white;padding:25px 16px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:8px 0 0}
+main{padding:18px;max-width:700px;margin:auto}
+input,button{padding:12px;border-radius:8px;border:1px solid #ccc;font-size:16px}
+input{width:100%;margin:8px 0}
+button{background:#542b3b;color:white;border:0;cursor:pointer}
+.book{background:white;padding:16px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
+.book h3{margin-top:0;color:#542b3b}
+#admin{display:none;background:#fff;padding:16px;border-radius:12px;margin-top:20px}
+footer{text-align:center;padding:25px;color:#777}
+</style>
+</head>
+<body>
+<header>
+<h1>📚 MAHI BOOKS</h1>
+<p>Gidan karatun littattafan Hausa</p>
+</header>
+<main>
+<h2>Karanta Littattafai ❤️</h2>
+<input id="search" placeholder="Nemo littafi..." oninput="showBooks()">
+<div id="books"></div>
 
+<button onclick="login()">Shiga as Admin</button>
+<div id="admin">
+<h3>Ƙara Sabon Littafi</h3>
+<input id="title" placeholder="Sunan littafi">
+<input id="author" placeholder="Sunan marubuci">
+<input id="file" type="file" accept=".pdf,.epub">
+<button onclick="addBook()">Ajiye Littafi</button>
+<button onclick="logout()">Fita</button>
+</div>
+</main>
+<footer>© MAHI BOOKS — Duk haƙƙin mallaka</footer>
+
+<script>
+let books=JSON.parse(localStorage.getItem("mahiBooks")||"[]");
+let isAdmin=false;
+
+function showBooks(){
+let q=document.getElementById("search").value.toLowerCase();
+let filtered=books.filter(b=>(b.title+" "+b.author).toLowerCase().includes(q));
+document.getElementById("books").innerHTML=filtered.length?
+filtered.map((b,i)=>`
+<div class="book">
+<h3>📖 ${b.title}</h3>
+<p>Marubuci: ${b.author}</p>
+<a href="${b.url}" target="_blank">Buɗe littafi</a>
+</div>`).join(""):"<p>Ba a samu littafi ba tukuna.</p>";
+}
+function login(){
+let password=prompt("Shigar da kalmar sirrin Admin:");
+if(password==="MAHI-CHANGE-ME"){
+isAdmin=true;
+document.getElementById("admin").style.display="block";
+alert("Ka shiga Admin.");
+}else alert("Kalmar sirri ba daidai ba ce.");
+}
+function logout(){
+isAdmin=false;
+document.getElementById("admin").style.display="none";
+}
+function addBook(){
+if(!isAdmin)return;
+let title=document.getElementById("title").value.trim();
+let author=document.getElementById("author").value.trim();
+let file=document.getElementById("file").files[0];
+if(!title||!author||!file){alert("Cika dukkan guraben.");return;}
+let url=URL.createObjectURL(file);
+books.push({title,author,url});
+localStorage.setItem("mahiBooks",JSON.stringify(books));
+showBooks();
+alert("An ƙara littafin a wannan na'urar.");
+}
+showBooks();
+</script>
+</body>
+</html>
